@@ -16,3 +16,30 @@ model = transformers.LlavaForConditionalGeneration.from_pretrained(
 processor = transformers.AutoProcessor.from_pretrained(
     "llava-hf/llava-1.5-7b-hf"
 )
+
+# プロンプトを準備
+prompt = """USER: <image>
+これは何の画像ですか。
+ASSISTANT:
+"""
+
+# プロセッサとモデルで推論
+inputs = processor(
+    prompt,
+    image,
+    return_tensors="pt"
+).to(model.device)
+
+outputs = model.generate(
+    **inputs,
+    do_sample=False,
+    max_new_tokens=256 
+)
+
+# 結果を出力
+output = outputs[0]
+
+print(processor.decode(
+    output,
+    skip_special_tokens=True
+))
